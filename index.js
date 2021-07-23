@@ -2,7 +2,8 @@
 const fs = require('fs')
 const inquirer = require('inquirer')
 const generateMarkdown = require("./utils/generateMarkdown")
-let readmeObj = {}
+let readmeObj = {
+}
 
 const devCreditsArr = []
 const thirdPArr = []
@@ -144,7 +145,7 @@ const devCreditsQuestions = [
     {
         type: 'input',
         name: 'creditDevsProfile',
-        message: "Please enter the URL of this developer's GitHub profile.",
+        message: "Please enter this developer's GitHub username.",
         when: ({ creditsDevsName }) => {
             if (creditsDevsName) {
                 return true;
@@ -224,6 +225,8 @@ function devCreditsEval() {
         console.log(devCreditsResponse)
         devCreditsArr.push(devCreditsResponse)
         console.log(devCreditsArr)
+        readmeObj.devCredits = devCreditsArr
+        console.log(readmeObj)
 
         if (devCreditsResponse.confirmAnotherDev) {
             devCreditsEval()
@@ -241,6 +244,8 @@ function thirdPEval() {
         console.log(thirdPResponse)
         thirdPArr.push(thirdPResponse)
         console.log(thirdPArr)
+        readmeObj.thirdPCredits = thirdPArr
+        console.log(readmeObj)
 
         if (thirdPResponse.confirmThirdParty) {
             thirdPEval()

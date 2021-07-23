@@ -12,7 +12,6 @@ function renderLicenseSection(license) { }
 
 const generateTableOfContents = data => {
   for (let i = 0; i < data.tableOfContents.length; i++) {
-    console.log(data.tableOfContents.length)
     return `- [${data.tableOfContents[i]}](#${data.tableOfContents[i]})`;
   }
 }
@@ -39,32 +38,47 @@ const generateUsage = data => {
 ${data.usage}`
 }
 
-const generateDevCredits = devCreditsArr => {
-  for (let i = 0; i < devCreditsArr.length; i++) {
-    console.log(devCreditsArr.length)
+const generateDevCredits = data => {
+  if (!data.devCredits) {
+    return '';
+  }
+
+  for (let i = 0; i < data.devCredits.length; i++) {
+    console.log(data.devCredits.length)
     return `
-    ## Developed By
-    - [${data.creditsDevsName[i]}](#${data.creditsDevsProfile[i]})`;
+## Developed By
+- [${data.devCredits[i].creditsDevsName}](http://www.github.com/${data.devCredits[i].creditDevsProfile})`;
+  }
+}
+
+const generateThirdPCredits = data => {
+  if (!data.thirdPCredits) {
+    return '';
+  }
+
+  for (let i = 0; i < data.thirdPCredits.length; i++) {
+    console.log(data.thirdPCredits.length)
+    return `
+## Third-Party Assets
+- [${data.thirdPCredits[i].creditAsset}](${data.thirdPCredits[i].creditAssetURL})`;
   }
 }
 
 
 // TODO: Create a function to generate markdown for README
 function generateMarkdown(data) {
+  console.log(data);
   return `# ${data.title}
 
 ## Description
 ${data.description}
 
 ## Table of Contents
-
 ${generateTableOfContents(data)}
-
 ${generateInstall(data)}
-
 ${generateUsage(data)}
-
 ${generateDevCredits(data)}
+${generateThirdPCredits(data)}
 `
 }
 
