@@ -1,9 +1,14 @@
 // TODO: Include packages needed for this application
 const fs = require('fs')
 const inquirer = require('inquirer')
+const generateMarkdown = require("./utils/generateMarkdown")
+let readmeObj = {}
 
-// TODO: Create an array of questions for user input
-const questions = [
+const devCreditsArr = []
+const thirdPArr = []
+
+
+const setupQuestions = [
     {
         type: 'input',
         name: 'title',
@@ -75,105 +80,7 @@ const questions = [
 
             }
         }
-    },
-    {
-        type: 'confirm',
-        name: 'confirmCreditsDevs',
-        message: 'Are you crediting any developers with GitHub profiles?',
-        when: ({ tableOfContents }) => {
-            if (tableOfContents.includes('Credits')) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'input',
-        name: 'creditsDevsName',
-        message: "Please enter the name of a developer you're crediting.",
-        when: ({ confirmCreditsDevs, confirmAnotherDev}) => {
-            if (confirmCreditsDevs || confirmAnotherDev) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'input',
-        name: 'creditDevsProfile',
-        message: "Please enter the URL of this developer's GitHub profile.",
-        when: ({ creditsDevsName }) => {
-            if (creditsDevsName) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'confirm',
-        name: 'confirmAnotherDev',
-        message: "Would you like to credit another developer?",
-        when: ({ creditDevsProfile }) => {
-            if (creditDevsProfile) {
-                // how do we loop back to earlier position to add another developer while keeping original data persistent?
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'confirm',
-        name: 'confirmThirdParty',
-        message: "Would you like to credit a third-party asset?",
-        when: ({ tableOfContents }) => {
-            if (tableOfContents.includes('Credits')) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'input',
-        name: 'creditAsset',
-        message: "Please enter the name of the third-party asset you'd like to credit.",
-        when: ({ confirmThirdParty }) => {
-            if (confirmThirdParty) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'input',
-        name: 'creditAssetURL',
-        message: "Please enter a URL for this third-party asset.",
-        when: ({ creditAsset }) => {
-            if (creditAsset) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'confirm',
-        name: 'confirmThirdParty',
-        message: "Would you like to credit another third-party asset?",
-        when: ({ creditAssetURL }) => {
-            if (creditAssetURL) {
-                // how do we loop back to earlier position to add another asset while keeping original data persistent?
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
+    },  
     {
         type: 'list',
         name: 'license',
@@ -228,14 +135,123 @@ const questions = [
     },
 ];
 
-// TODO: Create a function to write README file
-function writeToFile(fileName, data) {}
+const devCreditsQuestions = [
+    {
+        type: 'input',
+        name: 'creditsDevsName',
+        message: "Please enter the name of a developer you're crediting.",
+    },
+    {
+        type: 'input',
+        name: 'creditDevsProfile',
+        message: "Please enter the URL of this developer's GitHub profile.",
+        when: ({ creditsDevsName }) => {
+            if (creditsDevsName) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    {
+        type: 'confirm',
+        name: 'confirmAnotherDev',
+        message: "Would you like to credit another developer?",
+        when: ({ creditDevsProfile }) => {
+            if (creditDevsProfile) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+]
 
-// TODO: Create a function to initialize app
+const thirdPQuestions = [
+    {
+        type: 'input',
+        name: 'creditAsset',
+        message: "Please enter the name of any third-party asset you'd like to credit. If no credits are required for third-party assets, press ENTER.",
+    },
+    {
+        type: 'input',
+        name: 'creditAssetURL',
+        message: "Please enter a URL for this third-party asset.",
+        when: ({ creditAsset }) => {
+            if (creditAsset) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    {
+        type: 'confirm',
+        name: 'confirmThirdParty',
+        message: "Would you like to credit another third-party asset?",
+        when: ({ creditAssetURL }) => {
+            if (creditAssetURL) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+]
+
+
 function init() {
     return inquirer
-    .prompt(questions) 
-    }
+    .prompt(setupQuestions) 
+    .then(response => {
+        console.log(response)
+        readmeObj = response
+        if(response.tableOfContents.includes('Credits')) {
+            devCreditsEval()
+        } else {
+            fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
+                console.log("README generated!")
+                if (err) throw err
+            })
+        }
+    })
+}
+
+function devCreditsEval() {
+    return inquirer
+    .prompt(devCreditsQuestions)
+    .then(devCreditsResponse => {
+        console.log(devCreditsResponse)
+        devCreditsArr.push(devCreditsResponse)
+        console.log(devCreditsArr)
+
+        if (devCreditsResponse.confirmAnotherDev) {
+            devCreditsEval()
+        } else {
+            thirdPEval();
+        }
+
+    })
+}
+
+function thirdPEval() {
+    return inquirer
+    .prompt(thirdPQuestions)
+    .then(thirdPResponse => {
+        console.log(thirdPResponse)
+        thirdPArr.push(thirdPResponse)
+        console.log(thirdPArr)
+
+        if (thirdPResponse.confirmThirdParty) {
+            thirdPEval()
+        } else {
+            fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
+                console.log("README generated!")
+                if (err) throw err
+            })
+        }
+    })
+}
 
 // Function call to initialize app
 init();

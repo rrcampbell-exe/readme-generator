@@ -16,13 +16,12 @@ function generateMarkdown(data) {
 ## Description
 ${data.description}
 
-## Table of Contents
-${tableOfContents.map(({ section }) => {
-  return `
-  - [${section}](#${section})
-  `
-})
-`;
+## Table of Contents`
+// ${tableOfContents.map(({ section }) => {
+//   return `
+//   - [${section}](#${section})
+//   `
+// });
 }
 
 module.exports = generateMarkdown;
