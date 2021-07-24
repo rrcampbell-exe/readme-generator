@@ -1,14 +1,6 @@
-// TODO: Create a function that returns a license badge based on which license is passed in
-// If there is no license, return an empty string
-function renderLicenseBadge(license) { }
+const licenseTextGenerate = require("./licenseText")
 
-// TODO: Create a function that returns the license link
-// If there is no license, return an empty string
-function renderLicenseLink(license) { }
-
-// TODO: Create a function that returns the license section of README
-// If there is no license, return an empty string
-function renderLicenseSection(license) { }
+// FUNCTIONS TO GENERATE PROSPECTIVE SECTIONS OF README
 
 const generateTableOfContents = data => {
   for (let i = 0; i < data.tableOfContents.length; i++) {
@@ -64,11 +56,65 @@ const generateThirdPCredits = data => {
   }
 }
 
+const generateLicenseBadge = data => {
+  if (!data.tableOfContents.includes('License')) {
+    return '';
+  }
+  data.license = data.license.replace(" ", "%20")
+  return `
+[![license-${data.license}-blue.png](https://img.shields.io/badge/license-${data.license}-blue)](#License)`
+}
 
-// TODO: Create a function to generate markdown for README
+const generateLicense = data => {
+  if (!data.tableOfContents.includes('License')) {
+    return ''
+  }
+
+  return `
+## License
+
+${licenseTextGenerate(data)}`
+}
+
+const generateFeatures = data => {
+  if (!data.features) {
+    return '';
+  }
+  let featuresArr = data.features.split(', ')
+  console.log(data.features)
+  for (let i = 0; i < featuresArr.length; i++) {
+    return `
+## Features
+- ${featuresArr[i]}`;
+  }
+}
+
+const generateContributingCovenant = data => {
+  if (!data.contributing) {
+    return ''
+  }
+  return `
+## Contributing
+Those who contribute to this project are asked to abide by the [Contributor Covenant](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
+`
+}
+
+const generateContributingOwn = data => {
+  if (!data.contributingOwn) {
+    return ''
+  }
+  return `
+## Contributing
+${data.contributingOwn}
+`
+}
+
+
+// GENERATE FINAL LAYOUT OF README
 function generateMarkdown(data) {
   console.log(data);
   return `# ${data.title}
+${generateLicenseBadge(data)}
 
 ## Description
 ${data.description}
@@ -79,6 +125,12 @@ ${generateInstall(data)}
 ${generateUsage(data)}
 ${generateDevCredits(data)}
 ${generateThirdPCredits(data)}
+## Questions, Comments, Suggestions
+Please contact [${data.contactPerson}](mailto:${data.contactEmail}) with any questions, to report any bugs, or to make any feature suggestions.
+${generateFeatures(data)}
+${generateContributingCovenant(data)}
+${generateContributingOwn(data)}
+${generateLicense(data)}
 `
 }
 
