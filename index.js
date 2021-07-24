@@ -2,6 +2,7 @@
 const fs = require('fs')
 const inquirer = require('inquirer')
 const generateMarkdown = require("./utils/generateMarkdown")
+const licenseTextGenerate = require("./utils/licenseText")
 let readmeObj = {
 }
 
@@ -37,6 +38,32 @@ const setupQuestions = [
         }
     },
     {
+        type: 'input',
+        name: 'contactPerson',
+        message: 'Please provide the name of the person users can contact with questions.',
+        validate: contactPerson => {
+            if (contactPerson) {
+                return true;
+            } else {
+                console.log('You must enter a name.');
+                return false;
+            }
+        }
+    },
+    {
+        type: 'input',
+        name: 'contactEmail',
+        message: 'Please provide the email address of the person users can contact with questions.',
+        validate: contactEmail => {
+            if (contactEmail) {
+                return true;
+            } else {
+                console.log('You must enter an email address.');
+                return false;
+            }
+        }
+    },
+    {
         // is there a way to bypass this step and still proceed without breaking everything? if commented out, terminal has issues with subsequent 'includes'
         type: 'confirm',
         name: 'confirmTableOfContents',
@@ -47,7 +74,7 @@ const setupQuestions = [
         type: 'checkbox',
         name: 'tableOfContents',
         message: 'Which of the following sections would you like to include in your table of contents?',
-        choices: ['Installation', 'Usage', 'Credits', 'License', 'Features', 'Contributing', 'Tests'],
+        choices: ['Installation', 'Usage', 'Credits', 'License', 'Features', 'Contributing'],
         when: ({ confirmTableOfContents }) => {
             if (confirmTableOfContents) {
                 return true;
@@ -86,7 +113,19 @@ const setupQuestions = [
         type: 'list',
         name: 'license',
         message: 'Which license would you like to use?',
-        choices: ['MIT', 'GNU AGPLv3', 'GNU GPLv3', 'GNU LGPLv3', 'Mozilla Public License 2.0', 'Apache License 2.0', 'MIT License', 'Boost Software License', 'The Unlicense'],
+        choices: ['MIT', 'GNU AGPLv3', 'GNU GPLv3', 'GNU LGPLv3', 'Mozilla Public License 2.0', 'Apache License 2.0', 'Boost Software License', 'The Unlicense'],
+        when: ({ tableOfContents }) => {
+            if ( tableOfContents.includes('License') ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    {
+        type: 'input',
+        name: 'copyright',
+        message: 'Please enter the name of the copyright holder.',
         when: ({ tableOfContents }) => {
             if ( tableOfContents.includes('License') ) {
                 return true;
@@ -125,12 +164,11 @@ const setupQuestions = [
         type: 'input',
         name: 'contributingOwn',
         message: 'Please describe how others may contribute to this project.',
-        when: (contributing) => {
+        when: ({ contributing }) => {
             if (contributing) {
                 return false;
             } else {
                 return true;
-
             }
         }
     },
