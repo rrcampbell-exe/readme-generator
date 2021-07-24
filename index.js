@@ -2,13 +2,11 @@
 const fs = require('fs')
 const inquirer = require('inquirer')
 const generateMarkdown = require("./utils/generateMarkdown")
-const licenseTextGenerate = require("./utils/licenseText")
+
 let readmeObj = {
 }
 
 const devCreditsArr = []
-const thirdPArr = []
-
 
 const setupQuestions = [
     {
@@ -53,7 +51,7 @@ const setupQuestions = [
     {
         type: 'input',
         name: 'contactEmail',
-        message: 'Please provide the email address of the person users can contact with questions.',
+        message: "Please provide this person's email address.",
         validate: contactEmail => {
             if (contactEmail) {
                 return true;
@@ -64,19 +62,12 @@ const setupQuestions = [
         }
     },
     {
-        // is there a way to bypass this step and still proceed without breaking everything? if commented out, terminal has issues with subsequent 'includes'
-        type: 'confirm',
-        name: 'confirmTableOfContents',
-        message: 'Would you like to include a table of contents?',
-        default: true
-    },
-    {
         type: 'checkbox',
         name: 'tableOfContents',
-        message: 'Which of the following sections would you like to include in your table of contents?',
+        message: 'Which of the following sections would you like to include in your README?',
         choices: ['Installation', 'Usage', 'Credits', 'License', 'Features', 'Contributing'],
-        when: ({ confirmTableOfContents }) => {
-            if (confirmTableOfContents) {
+        when: ({ contactEmail }) => {
+            if (contactEmail) {
                 return true;
             } else {
                 console.log('You must choose at least one section.')
@@ -113,19 +104,7 @@ const setupQuestions = [
         type: 'list',
         name: 'license',
         message: 'Which license would you like to use?',
-        choices: ['MIT', 'GNU AGPLv3', 'GNU GPLv3', 'GNU LGPLv3', 'Mozilla Public License 2.0', 'Apache License 2.0', 'Boost Software License', 'The Unlicense'],
-        when: ({ tableOfContents }) => {
-            if ( tableOfContents.includes('License') ) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'input',
-        name: 'copyright',
-        message: 'Please enter the name of the copyright holder.',
+        choices: ['MIT', 'GNU AGPLv3', 'GNU GPLv3', 'GNU LGPLv3', 'The Unlicense'],
         when: ({ tableOfContents }) => {
             if ( tableOfContents.includes('License') ) {
                 return true;
@@ -148,27 +127,15 @@ const setupQuestions = [
         }
     },
     {
-        type: 'confirm',
+        type: 'input',
         name: 'contributing',
-        message: 'Would you like to use the standard "Contributor Convenant" language in your Contributing section?',
+        message: 'Please describe how others may contribute to this project.',
         when: ({ tableOfContents }) => {
             if (tableOfContents.includes('Contributing')) {
                 return true;
             } else {
                 return false;
 
-            }
-        }
-    },
-    {
-        type: 'input',
-        name: 'contributingOwn',
-        message: 'Please describe how others may contribute to this project.',
-        when: ({ contributing }) => {
-            if (contributing) {
-                return false;
-            } else {
-                return true;
             }
         }
     },
@@ -198,38 +165,6 @@ const devCreditsQuestions = [
         message: "Would you like to credit another developer?",
         when: ({ creditDevsProfile }) => {
             if (creditDevsProfile) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-]
-
-const thirdPQuestions = [
-    {
-        type: 'input',
-        name: 'creditAsset',
-        message: "Please enter the name of any third-party asset you'd like to credit. If no credits are required for third-party assets, press ENTER.",
-    },
-    {
-        type: 'input',
-        name: 'creditAssetURL',
-        message: "Please enter a URL for this third-party asset.",
-        when: ({ creditAsset }) => {
-            if (creditAsset) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
-        type: 'confirm',
-        name: 'confirmThirdParty',
-        message: "Would you like to credit another third-party asset?",
-        when: ({ creditAssetURL }) => {
-            if (creditAssetURL) {
                 return true;
             } else {
                 return false;
@@ -269,30 +204,12 @@ function devCreditsEval() {
         if (devCreditsResponse.confirmAnotherDev) {
             devCreditsEval()
         } else {
-            thirdPEval();
-        }
-
-    })
-}
-
-function thirdPEval() {
-    return inquirer
-    .prompt(thirdPQuestions)
-    .then(thirdPResponse => {
-        console.log(thirdPResponse)
-        thirdPArr.push(thirdPResponse)
-        console.log(thirdPArr)
-        readmeObj.thirdPCredits = thirdPArr
-        console.log(readmeObj)
-
-        if (thirdPResponse.confirmThirdParty) {
-            thirdPEval()
-        } else {
             fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
                 console.log("README generated!")
                 if (err) throw err
             })
         }
+
     })
 }
 

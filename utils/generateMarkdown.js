@@ -1,10 +1,9 @@
-const licenseTextGenerate = require("./licenseText")
-
 // FUNCTIONS TO GENERATE PROSPECTIVE SECTIONS OF README
 
 const generateTableOfContents = data => {
   for (let i = 0; i < data.tableOfContents.length; i++) {
-    return `- [${data.tableOfContents[i]}](#${data.tableOfContents[i]})`;
+    return `- [${data.tableOfContents[i]}](#${data.tableOfContents[i].toLowerCase()})
+- [Questions, Comments, Suggestions](#questions-comments-suggestions)`;
   }
 }
 
@@ -15,7 +14,6 @@ const generateInstall = data => {
 
   return `
 ## Installation
-
 ${data.installation}`
 }
 
@@ -26,7 +24,6 @@ const generateUsage = data => {
 
   return `
 ## Usage
-
 ${data.usage}`
 }
 
@@ -60,9 +57,9 @@ const generateLicenseBadge = data => {
   if (!data.tableOfContents.includes('License')) {
     return '';
   }
-  data.license = data.license.replace(" ", "%20")
+  let licenseURL = data.license.replace(" ", "%20")
   return `
-[![license-${data.license}-blue.png](https://img.shields.io/badge/license-${data.license}-blue)](#License)`
+[![license-${licenseURL}-blue.png](https://img.shields.io/badge/license-${licenseURL}-blue)](#License)`
 }
 
 const generateLicense = data => {
@@ -72,8 +69,7 @@ const generateLicense = data => {
 
   return `
 ## License
-
-${licenseTextGenerate(data)}`
+This application is covered under the ${data.license} license.`
 }
 
 const generateFeatures = data => {
@@ -89,23 +85,13 @@ const generateFeatures = data => {
   }
 }
 
-const generateContributingCovenant = data => {
+const generateContributing = data => {
   if (!data.contributing) {
     return ''
   }
   return `
 ## Contributing
-Those who contribute to this project are asked to abide by the [Contributor Covenant](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
-`
-}
-
-const generateContributingOwn = data => {
-  if (!data.contributingOwn) {
-    return ''
-  }
-  return `
-## Contributing
-${data.contributingOwn}
+${data.contributing}
 `
 }
 
@@ -128,8 +114,7 @@ ${generateThirdPCredits(data)}
 ## Questions, Comments, Suggestions
 Please contact [${data.contactPerson}](mailto:${data.contactEmail}) with any questions, to report any bugs, or to make any feature suggestions.
 ${generateFeatures(data)}
-${generateContributingCovenant(data)}
-${generateContributingOwn(data)}
+${generateContributing(data)}
 ${generateLicense(data)}
 `
 }
