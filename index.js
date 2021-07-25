@@ -7,7 +7,6 @@ const generateMarkdown = require("./utils/generateMarkdown")
 let readmeObj = {
 }
 
-// const devCreditsArr = []
 const devNameArr = []
 const devLinkArr = []
 
@@ -65,10 +64,23 @@ const setupQuestions = [
         }
     },
     {
+        type: 'input',
+        name: 'contactGitHub',
+        message: "Please provide this person's GitHub username.",
+        validate: contactGitHub => {
+            if (contactGitHub) {
+                return true;
+            } else {
+                console.log('You must enter a GitHub username.');
+                return false;
+            }
+        }
+    },
+    {
         type: 'checkbox',
         name: 'tableOfContents',
         message: 'Which of the following sections would you like to include in your README?',
-        choices: ['Installation', 'Usage', 'Credits', 'License', 'Features', 'Contributing'],
+        choices: ['Installation', 'Usage', 'Credits', 'License', 'Features', 'Contributing', 'Tests'],
         when: ({ contactEmail }) => {
             if (contactEmail) {
                 return true;
@@ -106,7 +118,7 @@ const setupQuestions = [
     {
         type: 'input',
         name: 'features',
-        message: 'Please enter a comma-separated list of features.',
+        message: 'Please enter a comma-separated list of features. (eg. Feature One, Feature Two, etc.)',
         when: ({ tableOfContents }) => {
             if (tableOfContents.includes('Features')) {
                 return true;
@@ -139,6 +151,19 @@ const setupQuestions = [
                 return true;
             } else {
                 return false;
+            }
+        }
+    },
+    {
+        type: 'input',
+        name: 'tests',
+        message: 'Please describe how others may test this project.',
+        when: ({ tableOfContents }) => {
+            if (tableOfContents.includes('Tests')) {
+                return true;
+            } else {
+                return false;
+
             }
         }
     },
@@ -181,7 +206,6 @@ function init() {
     return inquirer
     .prompt(setupQuestions) 
     .then(response => {
-        console.log(response)
         readmeObj = response
         if(response.tableOfContents.includes('Credits')) {
             devCreditsEval()
@@ -198,18 +222,10 @@ function devCreditsEval() {
     return inquirer
     .prompt(devCreditsQuestions)
     .then(devCreditsResponse => {
-        // console.log(devCreditsResponse)
-        // devCreditsArr.push(devCreditsResponse)
-        // console.log(devCreditsArr)
         devNameArr.push(devCreditsResponse.creditsDevsName)
         devLinkArr.push(devCreditsResponse.creditDevsProfile)
-        // console.log(devNameArr)
-        // console.log(devLinkArr)
-        // readmeObj.devCredits = devCreditsArr
         readmeObj.devNames = devNameArr
         readmeObj.devLinks = devLinkArr
-        console.log(readmeObj)
-
 
         if (devCreditsResponse.confirmAnotherDev) {
             devCreditsEval()
