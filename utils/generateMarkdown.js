@@ -58,10 +58,20 @@ const generateDevCredits = data => {
   if (!data.devNames) {
     return '';
   } else {
-  
-   return `
+
+    const accum = []
+    for (let i = 0; i < data.devNames.length; i++) {
+    const newTableLine = `- [${data.devNames[i]}](#${data.devLinks[i]})`
+    accum.push(newTableLine)
+    }
+    const tableLines = accum.join("\n")
+    return `
 ## Developed By
-${generateDevName(data)}${generateDevLink(data)}`
+${tableLines}`;
+  
+//    return `
+// ## Developed By
+// ${generateDevName(data)}${generateDevLink(data)}`
 
   }
 
