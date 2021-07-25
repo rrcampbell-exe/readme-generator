@@ -3,10 +3,13 @@ const fs = require('fs')
 const inquirer = require('inquirer')
 const generateMarkdown = require("./utils/generateMarkdown")
 
+
 let readmeObj = {
 }
 
-const devCreditsArr = []
+// const devCreditsArr = []
+const devNameArr = []
+const devLinkArr = []
 
 const setupQuestions = [
     {
@@ -101,19 +104,6 @@ const setupQuestions = [
         }
     },  
     {
-        type: 'list',
-        name: 'license',
-        message: 'Which license would you like to use?',
-        choices: ['MIT', 'GNU AGPLv3', 'GNU GPLv3', 'GNU LGPLv3', 'The Unlicense'],
-        when: ({ tableOfContents }) => {
-            if ( tableOfContents.includes('License') ) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    {
         type: 'input',
         name: 'features',
         message: 'Please enter a comma-separated list of features.',
@@ -136,6 +126,19 @@ const setupQuestions = [
             } else {
                 return false;
 
+            }
+        }
+    },
+    {
+        type: 'list',
+        name: 'license',
+        message: 'Which license would you like to use?',
+        choices: ['MIT', 'GNU AGPLv3', 'GNU GPLv3', 'GNU LGPLv3', 'The Unlicense'],
+        when: ({ tableOfContents }) => {
+            if ( tableOfContents.includes('License') ) {
+                return true;
+            } else {
+                return false;
             }
         }
     },
@@ -184,7 +187,7 @@ function init() {
             devCreditsEval()
         } else {
             fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
-                console.log("README generated!")
+                console.log("A README for " + readmeObj.title + " has been generated! It can be retrieved from the dist folder.")
                 if (err) throw err
             })
         }
@@ -195,17 +198,24 @@ function devCreditsEval() {
     return inquirer
     .prompt(devCreditsQuestions)
     .then(devCreditsResponse => {
-        console.log(devCreditsResponse)
-        devCreditsArr.push(devCreditsResponse)
-        console.log(devCreditsArr)
-        readmeObj.devCredits = devCreditsArr
+        // console.log(devCreditsResponse)
+        // devCreditsArr.push(devCreditsResponse)
+        // console.log(devCreditsArr)
+        devNameArr.push(devCreditsResponse.creditsDevsName)
+        devLinkArr.push(devCreditsResponse.creditDevsProfile)
+        // console.log(devNameArr)
+        // console.log(devLinkArr)
+        // readmeObj.devCredits = devCreditsArr
+        readmeObj.devNames = devNameArr
+        readmeObj.devLinks = devLinkArr
         console.log(readmeObj)
+
 
         if (devCreditsResponse.confirmAnotherDev) {
             devCreditsEval()
         } else {
             fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
-                console.log("README generated!")
+                console.log("A README for " + readmeObj.title + " has been generated! It can be retrieved from the dist folder.")
                 if (err) throw err
             })
         }

@@ -1,10 +1,21 @@
 // FUNCTIONS TO GENERATE PROSPECTIVE SECTIONS OF README
 
 const generateTableOfContents = data => {
-  for (let i = 0; i < data.tableOfContents.length; i++) {
-    return `- [${data.tableOfContents[i]}](#${data.tableOfContents[i].toLowerCase()})
-- [Questions, Comments, Suggestions](#questions-comments-suggestions)`;
-  }
+  const outer = data.tableOfContents.reduce(function(tableLines, lineData) {
+     tableLines.push(`- [${lineData}](#${lineData.toLowerCase()})`)
+     return tableLines
+  }, [])
+  outer.push(`- [Questions, Comments, Suggestions](#questions-comments-suggestions)`)
+  return outer.join("\n")
+  
+  // const accum = []
+  // for (let i = 0; i < data.tableOfContents.length; i++) {
+  // const newTableLine = `- [${data.tableOfContents[i]}](#${data.tableOfContents[i].toLowerCase()})`
+  // accum.push(newTableLine)
+  // }
+  // accum.push(`- [Questions, Comments, Suggestions](#questions-comments-suggestions)`)
+  // const tableLines = accum.join("\n")
+  // return tableLines
 }
 
 const generateInstall = data => {
@@ -27,30 +38,39 @@ const generateUsage = data => {
 ${data.usage}`
 }
 
-const generateDevCredits = data => {
-  if (!data.devCredits) {
-    return '';
-  }
-
-  for (let i = 0; i < data.devCredits.length; i++) {
-    console.log(data.devCredits.length)
-    return `
-## Developed By
-- [${data.devCredits[i].creditsDevsName}](http://www.github.com/${data.devCredits[i].creditDevsProfile})`;
-  }
+const generateDevName = data => {
+  const outer = data.devNames.reduce(function(tableLines, lineData) {
+    tableLines.push(lineData)
+    return tableLines
+  },[])
+  return outer.join("\n")
 }
 
-const generateThirdPCredits = data => {
-  if (!data.thirdPCredits) {
+const generateDevLink = data => {
+  const outer = data.devLinks.reduce(function(tableLines, lineData) {
+    tableLines.push(lineData)
+    return tableLines
+  },[])
+  return outer.join("\n")
+}
+
+const generateDevCredits = data => {
+  if (!data.devNames) {
     return '';
+  } else {
+  
+   return `
+   ## Developed By
+   - [${generateDevName()}](${generateDevLink()})`
+
   }
 
-  for (let i = 0; i < data.thirdPCredits.length; i++) {
-    console.log(data.thirdPCredits.length)
-    return `
-## Third-Party Assets
-- [${data.thirdPCredits[i].creditAsset}](${data.thirdPCredits[i].creditAssetURL})`;
-  }
+//   for (let i = 0; i < data.devCredits.length; i++) {
+//     console.log(data.devCredits.length)
+//     return `
+// ## Developed By
+// - [${data.devCredits[i].creditsDevsName}](http://www.github.com/${data.devCredits[i].creditDevsProfile})`;
+//   }
 }
 
 const generateLicenseBadge = data => {
@@ -76,13 +96,15 @@ const generateFeatures = data => {
   if (!data.features) {
     return '';
   }
+
   let featuresArr = data.features.split(', ')
-  console.log(data.features)
-  for (let i = 0; i < featuresArr.length; i++) {
-    return `
-## Features
-- ${featuresArr[i]}`;
-  }
+  const outer = featuresArr.reduce(function(tableLines, lineData) {
+    tableLines.push(`${lineData}`)
+    return tableLines
+ }, [])
+ return `
+ ## Features
+ - ${outer.join("\n - ")}`
 }
 
 const generateContributing = data => {
@@ -91,8 +113,7 @@ const generateContributing = data => {
   }
   return `
 ## Contributing
-${data.contributing}
-`
+${data.contributing}`
 }
 
 
@@ -109,13 +130,13 @@ ${data.description}
 ${generateTableOfContents(data)}
 ${generateInstall(data)}
 ${generateUsage(data)}
-${generateDevCredits(data)}
-${generateThirdPCredits(data)}
-## Questions, Comments, Suggestions
-Please contact [${data.contactPerson}](mailto:${data.contactEmail}) with any questions, to report any bugs, or to make any feature suggestions.
 ${generateFeatures(data)}
 ${generateContributing(data)}
 ${generateLicense(data)}
+${generateDevCredits(data)}
+
+## Questions, Comments, Suggestions
+Please contact [${data.contactPerson}](mailto:${data.contactEmail}) with any questions, to report any bugs, or to make any feature suggestions.
 `
 }
 
