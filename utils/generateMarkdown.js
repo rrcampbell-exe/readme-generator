@@ -40,7 +40,7 @@ ${data.usage}`
 
 const generateDevName = data => {
   const outer = data.devNames.reduce(function(tableLines, lineData) {
-    tableLines.push(lineData)
+    tableLines.push(`- [${lineData}]`)
     return tableLines
   },[])
   return outer.join("\n")
@@ -48,7 +48,7 @@ const generateDevName = data => {
 
 const generateDevLink = data => {
   const outer = data.devLinks.reduce(function(tableLines, lineData) {
-    tableLines.push(lineData)
+    tableLines.push(`(${lineData})`)
     return tableLines
   },[])
   return outer.join("\n")
@@ -60,8 +60,8 @@ const generateDevCredits = data => {
   } else {
   
    return `
-   ## Developed By
-   - [${generateDevName()}](${generateDevLink()})`
+## Developed By
+${generateDevName(data)}${generateDevLink(data)}`
 
   }
 
