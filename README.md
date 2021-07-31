@@ -18,7 +18,7 @@ The README Generator can be installed by cloning this application to your local 
 ## Usage
 Once you have cloned this application to your local device, ensure you have Node.js installed prior to using this application. Then, navigate to the root directory for this application on your device and, in Terminal, type "node index" followed by ENTER to initiate the README prompts. From here, respond to the prompts based on your project's needs. Once all prompts have been answered, you will find a README for this project in this project's /dist directory.
 
-You can also [watch this video walkthrough](https://www.awesomescreenshot.com/video/4612694) to see an example of how to use this application.
+You can also [watch this video walkthrough](https://www.awesomescreenshot.com/video/4612694?key=0ae6b361e28a3b6d5f00e8ce3ae72bf8) to see an example of how to use this application.
 
 
 ## License
