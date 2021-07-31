@@ -210,6 +210,10 @@ function init() {
         if(response.tableOfContents.includes('Credits')) {
             devCreditsEval()
         } else {
+            const dir = './dist'
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir);
+            }
             fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
                 console.log("A README for " + readmeObj.title + " has been generated! It can be retrieved from the dist folder.")
                 if (err) throw err
@@ -230,6 +234,10 @@ function devCreditsEval() {
         if (devCreditsResponse.confirmAnotherDev) {
             devCreditsEval()
         } else {
+            const dir = './dist'
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir);
+            }
             fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
                 console.log("A README for " + readmeObj.title + " has been generated! It can be retrieved from the dist folder.")
                 if (err) throw err
