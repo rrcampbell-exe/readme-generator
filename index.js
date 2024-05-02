@@ -1,6 +1,6 @@
-const fs = require('fs')
-const inquirer = require('inquirer')
-const generateMarkdown = require('./utils/generateMarkdown')
+import fs from 'fs'
+import inquirer from 'inquirer'
+import generateMarkdown from './utils/generateMarkdown.js'
 
 // Object to store user input for generating README
 let readmeObj = {}
