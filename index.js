@@ -1,12 +1,11 @@
-// TODO: Include packages needed for this application
 const fs = require('fs')
 const inquirer = require('inquirer')
-const generateMarkdown = require("./utils/generateMarkdown")
+const generateMarkdown = require('./utils/generateMarkdown')
 
+// Object to store user input for generating README
+let readmeObj = {}
 
-let readmeObj = {
-}
-
+// Arrays to store developer names and GitHub profiles
 const devNameArr = []
 const devLinkArr = []
 
@@ -80,7 +79,7 @@ const setupQuestions = [
         type: 'checkbox',
         name: 'tableOfContents',
         message: 'Which of the following sections would you like to include in your README?',
-        choices: ['Installation', 'Usage', 'Credits', 'License', 'Features', 'Contributing', 'Tests'],
+        choices: ['Installation', 'Usage', 'Features', 'Contributing', 'Tests', 'License', 'Credits' ],
         when: ({ contactEmail }) => {
             if (contactEmail) {
                 return true;
@@ -202,50 +201,56 @@ const devCreditsQuestions = [
 ]
 
 
+// Function to initialize the application
 function init() {
-    return inquirer
-    .prompt(setupQuestions) 
-    .then(response => {
-        readmeObj = response
-        if(response.tableOfContents.includes('Credits')) {
-            devCreditsEval()
-        } else {
-            const dir = './dist'
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir);
+    inquirer.prompt(setupQuestions)
+        .then(response => {
+            readmeObj = response
+            if (response.tableOfContents.includes('Credits')) {
+                devCreditsEval()
+            } else {
+                generateReadme()
             }
-            fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
-                console.log("A README for " + readmeObj.title + " has been generated! It can be retrieved from the dist folder.")
-                if (err) throw err
-            })
-        }
-    })
+        })
+        .catch(error => {
+            console.error('Error occurred during initialization:', error)
+        })
 }
 
+// Function to evaluate developer credits
 function devCreditsEval() {
-    return inquirer
-    .prompt(devCreditsQuestions)
-    .then(devCreditsResponse => {
-        devNameArr.push(devCreditsResponse.creditsDevsName)
-        devLinkArr.push(devCreditsResponse.creditDevsProfile)
-        readmeObj.devNames = devNameArr
-        readmeObj.devLinks = devLinkArr
+    inquirer.prompt(devCreditsQuestions)
+        .then(devCreditsResponse => {
+            devNameArr.push(devCreditsResponse.creditsDevsName)
+            devLinkArr.push(devCreditsResponse.creditDevsProfile)
+            readmeObj.devNames = devNameArr
+            readmeObj.devLinks = devLinkArr
 
-        if (devCreditsResponse.confirmAnotherDev) {
-            devCreditsEval()
-        } else {
-            const dir = './dist'
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir);
+            if (devCreditsResponse.confirmAnotherDev) {
+                devCreditsEval()
+            } else {
+                generateReadme()
             }
-            fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), (err) => {
-                console.log("A README for " + readmeObj.title + " has been generated! It can be retrieved from the dist folder.")
-                if (err) throw err
-            })
-        }
+        })
+        .catch(error => {
+            console.error('Error occurred during developer credits evaluation:', error)
+        })
+}
 
+// Function to generate README file
+function generateReadme() {
+    const dir = './dist'
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir)
+    }
+    fs.writeFile(`./dist/${readmeObj.title}-README.md`, generateMarkdown(readmeObj), err => {
+        if (err) {
+            console.error('Error occurred while generating README:', err)
+        } else {
+            console.log(`A README for ${readmeObj.title} has been generated! It can be retrieved from the dist folder.`)
+        }
     })
 }
 
 // Function call to initialize app
-init();
+init()

@@ -1,6 +1,6 @@
 {
-  "name": "static-site",
-  "version": "1.0.0",
+  "name": "ryan-r-campbell-readme-generator",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
